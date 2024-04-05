@@ -372,6 +372,10 @@ def num_params(model):
 
 
 def residual_block_num_params(dim, hidden_dim, norm):
+    #if isinstance(norm, nn.BatchNorm1d):
+    #    print("Is batch")
+    #else:
+    #    print("Is layer")
     model = ResidualBlock(dim, hidden_dim, norm)
     return np.array(num_params(model))
 
@@ -2223,6 +2227,9 @@ def submit_optim_adam():
 
 
 def test_mlp_residual_block_num_params_1():
+    #x = residual_block_num_params(15, 2, nn.BatchNorm1d)
+    #print("@@@@@@@@@")
+    #print(x)
     np.testing.assert_allclose(
         residual_block_num_params(15, 2, nn.BatchNorm1d),
         np.array(111),

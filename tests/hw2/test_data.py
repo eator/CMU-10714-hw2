@@ -10898,7 +10898,10 @@ def test_dataloader_ndarray():
         )
 
         for i, batch in enumerate(train_dataloader):
+            # batch_x is by __next__
             batch_x = batch[0].numpy()
+            # print(batch_x.shape)
+            # truth_x is by __getitem__ and reshaped
             truth_x = train_dataset[i * batch_size : (i + 1) * batch_size][0].reshape(
                 (batch_size, 10, 10)
             )

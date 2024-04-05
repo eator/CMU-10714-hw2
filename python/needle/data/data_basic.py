@@ -1,4 +1,5 @@
 import numpy as np
+import needle as ndl
 from ..autograd import Tensor
 
 from typing import Iterator, Optional, List, Sized, Union, Iterable, Any
@@ -54,18 +55,73 @@ class DataLoader:
         self.dataset = dataset
         self.shuffle = shuffle
         self.batch_size = batch_size
-        if not self.shuffle:
-            self.ordering = np.array_split(np.arange(len(dataset)), 
-                                           range(batch_size, len(dataset), batch_size))
+
+        order = np.arange(len(dataset))
+        if self.shuffle:
+            np.random.shuffle(order)
+
+        self.ordering = np.array_split(order,range(batch_size, len(dataset), batch_size))
 
     def __iter__(self):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+        self.it = 0
         return self
+        ### END YOUR SOLUTION
+
+    def __len__(self):
+        return len(self.ordering)
 
     def __next__(self):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
-        ### END YOUR SOLUTION
+        if self.it >= len(self):
+            raise StopIteration
 
+        idx = self.it
+        self.it += 1
+
+        # TODO to be figured out
+        return tuple([Tensor(x) for x in self.dataset[self.ordering[idx]]]) 
+
+        #types = len(tuple(self.dataset[0]))
+        ##print(types)
+        #batch_data = []
+
+        #for i in range(self.batch_size):
+        #    #print("&&&&&&")
+        #    #print(self.dataset[self.ordering[self.it][i]][0].shape)
+        #    items = list(self.dataset[self.ordering[self.it][i]])
+        #    #print(Tensor(data).shape)
+        #    if len(batch_data) == 0:
+        #        for x in items:
+        #            if isinstance(self.dataset, ndl.data.NDArrayDataset):
+        #                newshape = (1,) + x.shape
+        #                x = x.reshape(newshape)
+
+        #            if np.isscalar(x):
+        #                batch_data.append([x]) 
+        #            else:
+        #                batch_data.append(x) 
+
+        #        #print(Tensor(batch_data).shape)
+        #    else:
+        #        #print(Tensor(batch_data).shape)
+        #        #print(Tensor(data).shape)
+        #        for i, x in enumerate(items):
+        #            #print("******")
+        #            #print(Tensor(batch_data[i]).shape)
+        #            if isinstance(self.dataset, ndl.data.NDArrayDataset):
+        #                newshape = (1,) + x.shape
+        #                x = x.reshape(newshape)
+
+        #            if np.isscalar(x):
+        #                batch_data[i] = np.concatenate((batch_data[i], [x]))
+        #            else:
+        #                batch_data[i] = np.concatenate((batch_data[i], x))
+        #            #print("&&&&&&")
+        #            #print(Tensor(batch_data[i]).shape)
+        #            #print('\n')
+
+        #self.it += 1        
+
+        #return tuple([Tensor(x) for x in batch_data]) 
+        ### END YOUR SOLUTION

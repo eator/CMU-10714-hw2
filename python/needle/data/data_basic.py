@@ -1,5 +1,6 @@
 import numpy as np
 import needle as ndl
+import math
 from ..autograd import Tensor
 
 from typing import Iterator, Optional, List, Sized, Union, Iterable, Any
@@ -56,20 +57,24 @@ class DataLoader:
         self.shuffle = shuffle
         self.batch_size = batch_size
 
-        order = np.arange(len(dataset))
-        if self.shuffle:
-            np.random.shuffle(order)
-
-        self.ordering = np.array_split(order,range(batch_size, len(dataset), batch_size))
+        if not self.shuffle:
+            self.ordering = np.array_split(np.arange(len(dataset)), 
+                                        range(batch_size, len(dataset), batch_size))
 
     def __iter__(self):
         ### BEGIN YOUR SOLUTION
+        if self.shuffle:
+            shuffle_order = np.arange(len(self.dataset))
+            np.random.shuffle(shuffle_order)
+            self.ordering = np.array_split(shuffle_order,
+                                    range(self.batch_size, len(self.dataset), self.batch_size))
+
         self.it = 0
         return self
         ### END YOUR SOLUTION
 
     def __len__(self):
-        return len(self.ordering)
+        return math.ceil(len(self.dataset) / self.batch_size)
 
     def __next__(self):
         ### BEGIN YOUR SOLUTION
